@@ -1,0 +1,6 @@
+googlemaps
+fake-useragent
+selenium
+webdriver_manager
+emoji
+opencc-python-reimplemented
