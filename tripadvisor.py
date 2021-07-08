@@ -161,12 +161,12 @@ def parse_restaurant(driver, link, wait=2):
             
                 try:
                     user_reviews = user_info.find_element_by_xpath(".//div /div /div[contains(@class, 'reviewerBadge')] /span")
-                    m = re.match(r'^([0-9]+)', user_reviews.text)
+                    m = re.match(r'^([0-9]+)', user_reviews.text.replace(",", ""))
                     user_reviews = int(m.groups()[0])
                 except:
                     # translated reviews with different format
                     user_reviews = user_info.find_element_by_xpath(".//div /div[contains(@class, 'memberBadgingNoText')] /span [@class = 'badgetext']")
-                    user_reviews = int(user_reviews.text)
+                    user_reviews = int(user_reviews.text.replace(",", ""))
             
             except:
                 
