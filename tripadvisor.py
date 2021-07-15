@@ -197,18 +197,31 @@ def parse_restaurant(driver, link, wait=2):
                 summary = ""
             
             try:
-                date = review_sections[1].find_element_by_xpath(".//div [contains(@data-prwidget-name, 'reviews_stay_date')]").text
-                date = cc.convert(date)
-                m = re.search(r'([0-9]+)\w([0-9]+)\w', date)
-                date = list(m.groups())
-                date = [int(d) for d in date]
+                visit_date = review_sections[1].find_element_by_xpath(".//div [contains(@data-prwidget-name, 'reviews_stay_date')]").text
+                visit_date = cc.convert(visit_date)
+                m = re.search(r'([0-9]+)\w([0-9]+)\w', visit_date)
+                visit_date = list(m.groups())
+                visit_date = [int(d) for d in visit_date]
             except:
-                date = []
+                visit_date = []
+            
+            try:
+                rating_date = review_sections[1].find_element_by_xpath(".//span [@class = 'ratingDate']").text
+                rating_date = cc.convert(rating_date)
+                m = re.search(r'([0-9]+)\w([0-9]+)\w([0-9]+)\w', rating_date)
+                rating_date = list(m.groups())
+                rating_date = [int(d) for d in rating_date]
+            except:
+                rating_date = []
             
             review_item["rating"] = rating
             review_item["quote"] = quote
             review_item["summary"] = summary
-            review_item["date"] = date
+            review_item["visit_date"] = visit_date
+            review_item["rating_date"] = rating_date
+            
+            print(visit_date)
+            print(rating_date)
             
             review_list.append(review_item)
             
@@ -242,7 +255,7 @@ if __name__ == "__main__":
     
     url = "https://www.tripadvisor.com.tw/Restaurants-g13806427-Beitou_Taipei.html"    
     driver = webdriver.Edge(EdgeChromiumDriverManager().install())
-    
+    """
     if not skip_searching_restaurants:
     
         t0 = time.time()    
@@ -285,5 +298,5 @@ if __name__ == "__main__":
     
     with open(failedpath, "w") as write_file:
         json.dump(failed, write_file)
-    
+    """
     driver.close()
