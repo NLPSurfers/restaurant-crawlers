@@ -1,4 +1,6 @@
 *.pyd
 *.pyc
+*.json
+*.npy
 data/
 doc/
