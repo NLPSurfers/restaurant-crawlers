@@ -13,8 +13,9 @@ def download(info_path, output_path):
     with open(info_path, "r") as read_file:
         infos = json.load(read_file)
     
-    image_info = {}
+    image_infos = []
     for info in tqdm(infos):
+        image_info = {}
         image_info["name"] = info["name"]
         image_info["url"] = info["url"]
         images = []
@@ -45,9 +46,10 @@ def download(info_path, output_path):
                 images.append(image_data)
                 is_done = True
         image_info["images"] = images
-    
+        image_infos.append(image_info)
+        
     with open(output_path, "w") as write_file:
-        json.dump(image_info, write_file)
+        json.dump(image_infos, write_file)
 
 if __name__ == "__main__":
     
