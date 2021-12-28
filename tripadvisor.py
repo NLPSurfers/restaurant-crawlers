@@ -132,7 +132,7 @@ def parse_restaurant(driver, link, wait=2):
     driver.back()
     
     print(f"# images: {len(image_links)}")
-    info["images"] = image_links
+    info["image_url"] = image_links
     
     info["characteristics"] = characteristics
     
@@ -220,8 +220,8 @@ def parse_restaurant(driver, link, wait=2):
             review_item["visit_date"] = visit_date
             review_item["rating_date"] = rating_date
             
-            print(visit_date)
-            print(rating_date)
+            #print(visit_date)
+            #print(rating_date)
             
             review_list.append(review_item)
             
@@ -245,17 +245,9 @@ def parse_restaurant(driver, link, wait=2):
     
     return info
 
-if __name__ == "__main__":
-    
-    output_dir = "./data"
-    linkpath = os.path.join(output_dir, "tripadvisor_restaurants_beitou.json")
-    filepath = os.path.join(output_dir, "tripadvisor_restaurant_infos.json")
-    failedpath = os.path.join(output_dir, "tripadvisor_parse_fails.json")
-    skip_searching_restaurants = True
-    
-    url = "https://www.tripadvisor.com.tw/Restaurants-g13806427-Beitou_Taipei.html"    
+def crawl(url, linkpath, filepath, failedpath, skip_searching_restaurants=False):
     driver = webdriver.Edge(EdgeChromiumDriverManager().install())
-    """
+
     if not skip_searching_restaurants:
     
         t0 = time.time()    
@@ -272,12 +264,7 @@ if __name__ == "__main__":
             links = json.load(read_file)
     
     t0 = time.time()
-    """
-    #links = ["https://www.tripadvisor.com.tw/Restaurant_Review-g13808671-d6952032-Reviews-Le_Cafe_Hotel_Royal_Nikko_Taipei-Zhongshan_District_Taipei.html"]
-    links = ["https://www.tripadvisor.com.tw/Restaurant_Review-g13806451-d6133115-Reviews-21_Worker_House_Chilled_Noodles-Datong_Taipei.html"]
-    for link in links:
-        parse_restaurant(driver, link)
-    """
+    
     infos = []
     failed = []
     for link in links:
@@ -298,5 +285,56 @@ if __name__ == "__main__":
     
     with open(failedpath, "w") as write_file:
         json.dump(failed, write_file)
-    """
+
+    driver.close()
+
+if __name__ == "__main__":
+    
+    output_dir = "./data"
+    linkpath = os.path.join(output_dir, "tripadvisor_restaurants_beitou.json")
+    filepath = os.path.join(output_dir, "tripadvisor_restaurant_infos.json")
+    failedpath = os.path.join(output_dir, "tripadvisor_parse_fails.json")
+    skip_searching_restaurants = True
+    
+    url = "https://www.tripadvisor.com.tw/Restaurants-g13806427-Beitou_Taipei.html"    
+    driver = webdriver.Edge(EdgeChromiumDriverManager().install())
+
+    if not skip_searching_restaurants:
+    
+        t0 = time.time()    
+        links = search_for_restaurants(driver, url)    
+        print("Part 1: Time Elapsed: {:.4f}".format(time.time() - t0))
+        
+        print(f"n_restaurants: {len(links)}")
+        with open(linkpath, "w") as write_file:
+            json.dump(list(links), write_file)
+    
+    else:
+    
+        with open(linkpath, "r") as read_file:
+            links = json.load(read_file)
+    
+    t0 = time.time()
+    
+    infos = []
+    failed = []
+    for link in links:
+        try:
+            infos.append(parse_restaurant(driver, link))
+        except:
+            print(f"link failed: {link}")
+            failed.append(link)
+    print("Part 2: Time Elapsed: {:.4f}".format(time.time() - t0))
+    
+    print("*"*20)
+    print(f"# done: {len(infos)}")
+    print(f"# fails: {len(failed)}")
+    print("*"*20)
+    
+    with open(filepath, "w") as write_file:
+        json.dump(infos, write_file)
+    
+    with open(failedpath, "w") as write_file:
+        json.dump(failed, write_file)
+
     driver.close()
